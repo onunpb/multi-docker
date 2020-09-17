@@ -5,13 +5,11 @@ services:
 
 before_install:
     - docker build -t napbarros/react_test_client -f ./client/Dockerfile.dev ./client
-    - docker build -t napbarros/react_test_nginx -f ./nginx/Dockerfile.dev ./nginx
     - docker build -t napbarros/react_test_server -f ./server/Dockerfile.dev ./server
     - docker build -t napbarros/react_test_worker -f ./worker/Dockerfile.dev ./worker
 
 script:
     - docker run -e CI=true napbarros/react_test_client npm run test 
-    - docker run -e CI=true napbarros/react_test_nginx npm run test 
     - docker run -e CI=true napbarros/react_test_server npm run test 
     - docker run -e CI=true napbarros/react_test_worker npm run test 
 
