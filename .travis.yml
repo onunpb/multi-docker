@@ -1,0 +1,32 @@
+language: generic
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t napbarros/react_test_client -f ./Client/Dockerfile.dev ./client
+    - docker build -t napbarros/react_test_nginx -f ./nginx/Dockerfile.dev ./nginx
+    - docker build -t napbarros/react_test_server -f ./server/Dockerfile.dev ./server
+    - docker build -t napbarros/react_test_worker -f ./worker/Dockerfile.dev ./worker
+
+script:
+    - docker run -e CI=true napbarros/react_test_client npm run test 
+    - docker run -e CI=true napbarros/react_test_nginx npm run test 
+    - docker run -e CI=true napbarros/react_test_server npm run test 
+    - docker run -e CI=true napbarros/react_test_worker npm run test 
+
+after_success:
+    - docker build -t napbarros/multi_client ./client
+    - docker build -t napbarros/multi_nginx ./nginx
+    - docker build -t napbarros/multi_server ./server
+    - docker build -t napbarros/multi_worker ./worker
+    
+    # Log in to the docker CLI
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin 
+    
+    # Take those images and push them to docker hub
+    - docker push napbarros/multi_client
+    - docker push napbarros/multi_nginx
+    - docker push napbarros/multi_server
+    - docker push napbarros/multi_worker 
+
