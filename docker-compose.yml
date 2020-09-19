@@ -1,7 +1,10 @@
 version: '3'
 services: 
     postgres:
-        image: 'postgres:latest'
+        image: 'postgres:9.6-alpine'
+        environment:
+            POSTGRES_DB: "db"
+            POSTGRES_HOST_AUTH_METHOD: "trust"
     redis:
         image: 'redis:latest'
     nginx:
